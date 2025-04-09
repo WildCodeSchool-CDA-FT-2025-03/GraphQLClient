@@ -12,11 +12,10 @@ import { gql } from "@apollo/client";
 const GET_ALL_WINES = gql`
   query GetAllWines {
     getAllWines {
+      fruit
       id
       name
       region
-      fruit
-      grape_varieties
     }
   }
 `;
@@ -27,7 +26,6 @@ type Wines = {
     name: string;
     region: string;
     fruit: string;
-    grape_varieties: string[];
   }[];
 };
 function App() {
