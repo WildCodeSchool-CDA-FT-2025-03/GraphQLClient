@@ -1,6 +1,7 @@
-import { useQuery } from "@apollo/client";
+// import { useQuery } from "@apollo/client";
 import "./App.css";
-import { gql } from "@apollo/client";
+// import { GET_ALL_WINES } from "./schemas/wines.schema";
+import { useGetAllWinesQuery } from "./generated/graphql-types";
 
 // const request = {
 //   query:
@@ -9,25 +10,14 @@ import { gql } from "@apollo/client";
 //   operationName: "GetAllWines",
 // };
 
-const GET_ALL_WINES = gql`
-  query GetAllWines {
-    getAllWines {
-      fruit
-      id
-      name
-      region
-    }
-  }
-`;
-
-type Wines = {
-  getAllWines: {
-    id: number;
-    name: string;
-    region: string;
-    fruit: string;
-  }[];
-};
+// type Wines = {
+//   getAllWines: {
+//     id: number;
+//     name: string;
+//     region: string;
+//     fruit: string;
+//   }[];
+// };
 function App() {
   // const fetchAllWines = async () => {
   //   try {
@@ -44,7 +34,7 @@ function App() {
   //   fetchAllWines();
   // }, []);
 
-  const { loading, error, data } = useQuery<Wines>(GET_ALL_WINES);
+  const { loading, error, data } = useGetAllWinesQuery();
   console.log(data);
 
   if (error) return <p>Error</p>;
