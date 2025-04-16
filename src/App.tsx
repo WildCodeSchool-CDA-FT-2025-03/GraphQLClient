@@ -43,7 +43,10 @@ function App() {
     <>
       <h1>Hello Toto</h1>
       {data?.getAllWines.map((wine) => (
-        <h2>{wine.name}</h2>
+        <>
+          <h2>{wine.name}</h2>
+          <p>{wine.tanin}</p>
+        </>
       ))}
     </>
   );
