@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSignupMutation } from "./generated/graphql-types";
 import "./App.css";
 
 type SignupType = {
@@ -16,6 +17,7 @@ const initialSignUp = {
 function App() {
   const [signup, setSignup] = useState<SignupType>(initialSignUp);
   const [error, setError] = useState<string | undefined>();
+  const [signupMutation, { data }] = useSignupMutation();
 
   const handleSignup = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -27,8 +29,15 @@ function App() {
     setSignup((prev) => ({ ...prev, [name]: value }));
   };
 
-  const signUpSubmission = (e: React.FormEvent<HTMLFormElement>) => {
+  const signUpSubmission = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    try {
+      await signupMutation({
+        variables: { password: signup.password, email: signup.email },
+      });
+    } catch (error) {
+      console.error(error);
+    }
     console.log(signup);
   };
 
@@ -39,7 +48,7 @@ function App() {
         <label aria-label="email">
           Email
           <input
-            type="text"
+            type="email"
             required
             value={signup.email}
             name="email"
@@ -51,7 +60,7 @@ function App() {
         <label aria-label="password">
           Mot de passe
           <input
-            type="text"
+            type="password"
             required
             minLength={8}
             name="password"
@@ -62,7 +71,7 @@ function App() {
         <label aria-label="confirmed password">
           Confirmation
           <input
-            type="text"
+            type="password"
             required
             minLength={8}
             name="confirmed"
