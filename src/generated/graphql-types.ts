@@ -26,13 +26,12 @@ export type Grapes = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  signup: Users;
+  signup: Scalars['Boolean']['output'];
 };
 
 
 export type MutationSignupArgs = {
-  email: Scalars['String']['input'];
-  password: Scalars['String']['input'];
+  data: UsersInput;
 };
 
 export type Query = {
@@ -40,11 +39,9 @@ export type Query = {
   getAllWines: Array<Wines>;
 };
 
-export type Users = {
-  __typename?: 'Users';
-  email: Scalars['String']['output'];
-  hash: Scalars['String']['output'];
-  id: Scalars['Float']['output'];
+export type UsersInput = {
+  email: Scalars['String']['input'];
+  password: Scalars['String']['input'];
 };
 
 export type Wines = {
@@ -62,12 +59,11 @@ export type Wines = {
 };
 
 export type SignupMutationVariables = Exact<{
-  password: Scalars['String']['input'];
-  email: Scalars['String']['input'];
+  data: UsersInput;
 }>;
 
 
-export type SignupMutation = { __typename?: 'Mutation', signup: { __typename?: 'Users', id: number } };
+export type SignupMutation = { __typename?: 'Mutation', signup: boolean };
 
 export type GetAllWinesQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -76,10 +72,8 @@ export type GetAllWinesQuery = { __typename?: 'Query', getAllWines: Array<{ __ty
 
 
 export const SignupDocument = gql`
-    mutation Signup($password: String!, $email: String!) {
-  signup(password: $password, email: $email) {
-    id
-  }
+    mutation Signup($data: UsersInput!) {
+  signup(data: $data)
 }
     `;
 export type SignupMutationFn = Apollo.MutationFunction<SignupMutation, SignupMutationVariables>;
@@ -97,8 +91,7 @@ export type SignupMutationFn = Apollo.MutationFunction<SignupMutation, SignupMut
  * @example
  * const [signupMutation, { data, loading, error }] = useSignupMutation({
  *   variables: {
- *      password: // value for 'password'
- *      email: // value for 'email'
+ *      data: // value for 'data'
  *   },
  * });
  */

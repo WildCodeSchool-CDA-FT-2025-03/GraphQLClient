@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import { useSignupMutation } from "./generated/graphql-types";
 import "./App.css";
 
@@ -17,7 +18,8 @@ const initialSignUp = {
 function App() {
   const [signup, setSignup] = useState<SignupType>(initialSignUp);
   const [error, setError] = useState<string | undefined>();
-  const [signupMutation, { data }] = useSignupMutation();
+  const [signupMutation] = useSignupMutation();
+  const navigate = useNavigate();
 
   const handleSignup = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -32,9 +34,15 @@ function App() {
   const signUpSubmission = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await signupMutation({
-        variables: { password: signup.password, email: signup.email },
+      const { data } = await signupMutation({
+        variables: { data: { password: signup.password, email: signup.email } },
       });
+      if (data && data.signup) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+        setSignup(initialSignUp);
+      }
     } catch (error) {
       console.error(error);
     }
