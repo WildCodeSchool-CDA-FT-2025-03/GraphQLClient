@@ -1,0 +1,22 @@
+name: Vitest component
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - dev
+
+jobs:
+  testing:
+    name: Run intergation test on client
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Git repository, copy
+        uses: actions/checkout@v4
+
+      - name: Install dependence
+        run: npm install
+
+      - name: Run test on components
+        run: npm run test

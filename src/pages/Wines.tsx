@@ -1,4 +1,5 @@
 import { useGetAllWinesQuery } from "../generated/graphql-types";
+import Card from "../components/Card/Card";
 
 function Wines() {
   const { loading, error, data } = useGetAllWinesQuery();
@@ -9,10 +10,7 @@ function Wines() {
     <>
       <h1>Découvrez tous nos vins</h1>
       {data?.getAllWines.map((wine) => (
-        <>
-          <h2>{wine.name}</h2>
-          <p>{wine.tanin}</p>
-        </>
+        <Card wine={wine} />
       ))}
     </>
   );
