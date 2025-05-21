@@ -1,63 +1,95 @@
-import { useQuery } from "@apollo/client";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { useSignupMutation } from "./generated/graphql-types";
 import "./App.css";
-import { gql } from "@apollo/client";
 
-// const request = {
-//   query:
-//     "query GetAllWines {\n  getAllWines {\n    id\n    name\n    region\n    fruit\n    grape_varieties\n  }\n}\n\n\n\n\n",
-//   variables: {},
-//   operationName: "GetAllWines",
-// };
-
-const GET_ALL_WINES = gql`
-  query GetAllWines {
-    getAllWines {
-      id
-      name
-      region
-      fruit
-      grape_varieties
-    }
-  }
-`;
-
-type Wines = {
-  getAllWines: {
-    id: number;
-    name: string;
-    region: string;
-    fruit: string;
-    grape_varieties: string[];
-  }[];
+type SignupType = {
+  email: string;
+  password: string;
+  confirmed: string;
 };
+
+const initialSignUp = {
+  email: "",
+  password: "",
+  confirmed: "",
+};
+
 function App() {
-  // const fetchAllWines = async () => {
-  //   try {
-  //     const result = await fetch("http://localhost:5500", {
-  //       method: "POST",
-  //       body: JSON.stringify(request),
-  //     });
-  //     console.log(result);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-  // useEffect(() => {
-  //   fetchAllWines();
-  // }, []);
+  const [signup, setSignup] = useState<SignupType>(initialSignUp);
+  const [error, setError] = useState<string | undefined>();
+  const [signupMutation] = useSignupMutation();
+  const navigate = useNavigate();
 
-  const { loading, error, data } = useQuery<Wines>(GET_ALL_WINES);
-  console.log(data);
+  const handleSignup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === "confirmed" && value !== signup.password) {
+      setError("mots de passe différents");
+    } else if (name === "confirmed") {
+      setError(undefined);
+    }
+    setSignup((prev) => ({ ...prev, [name]: value }));
+  };
 
-  if (error) return <p>Error</p>;
-  if (loading) return <p>Loading</p>;
+  const signUpSubmission = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const { data } = await signupMutation({
+        variables: { data: { password: signup.password, email: signup.email } },
+      });
+      if (data && data.signup) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+        setSignup(initialSignUp);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
-    <>
-      <h1>Hello Toto</h1>
-      {data?.getAllWines.map((wine) => (
-        <h2>{wine.name}</h2>
-      ))}
-    </>
+    <main>
+      <h1>Enregistrez vous pour continuer</h1>
+      <form onSubmit={signUpSubmission}>
+        <label aria-label="email">
+          Email
+          <input
+            type="email"
+            required
+            value={signup.email}
+            name="email"
+            onChange={handleSignup}
+            pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+            title="Invalid email address"
+          />
+        </label>
+        <label aria-label="password">
+          Mot de passe
+          <input
+            type="password"
+            required
+            minLength={8}
+            name="password"
+            onChange={handleSignup}
+            value={signup.password}
+          />
+        </label>
+        <label aria-label="confirmed password">
+          Confirmation
+          <input
+            type="password"
+            required
+            minLength={8}
+            name="confirmed"
+            onChange={handleSignup}
+            value={signup.confirmed}
+          />
+          {error && <p>{error}</p>}
+        </label>
+        <button type="submit">S'inscrire</button>
+      </form>
+    </main>
   );
 }
 
